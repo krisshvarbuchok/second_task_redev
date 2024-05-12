@@ -2,6 +2,11 @@ import React, {useRef, useState} from 'react';
 import './App.css';
 import ListOfElement from './Todo/List';
 import { v4 as uuidv4 } from 'uuid';
+import { GlobalStyles } from './Todo/Globalstyle';
+import { lightTheme, darkTheme } from './Todo/Themes';
+import {ThemeProvider} from "styled-components";
+import {useDarkMode} from './Todo/useDarkMode';
+import Toggle from './Todo/Toggler';
 
 const arr = [
   {id: 1, name: 'Alice', age: 25},
@@ -12,6 +17,8 @@ function App() {
   const [text, setText] = useState('');
   const [items, setItems] = useState(arr);
   const textInput = useRef(null);
+  const [theme, themeToggler, mountedComponent] = useDarkMode();
+  const themeMode = theme === 'light' ? lightTheme : darkTheme;
 
   const valid = () => {
     textInput.current.focus()
@@ -25,13 +32,23 @@ function App() {
       event.target.value = null;
     } 
   }
-
+  if(!mountedComponent) return <div/>
   return (
+    <ThemeProvider theme={themeMode}>
+
+<>
+<GlobalStyles/>
+
     <div>
+    <Toggle theme={theme} toggleTheme={themeToggler} />
       <input ref={textInput} defaultValue={text} onKeyDown={handleKeyDown} />
       <button onClick={() => valid()}>Click to focus</button>  
       <ListOfElement arr={items}/>
+      
     </div>
+    </>
+
+</ThemeProvider>
   );
 }
 
